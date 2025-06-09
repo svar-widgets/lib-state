@@ -1,6 +1,6 @@
 {
 	"name": "wx-lib-state",
-	"version": "1.9.0",
+	"version": "1.9.3",
 	"main": "./dist/state-lib.umd.js",
 	"module": "./dist/state-lib.es.js",
 	"types": "./dist/types/index.d.ts",
@@ -32,17 +32,17 @@
 	],
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/svar-widgets/lib-dom"
+		"url": "https://github.com/svar-widgets/lib-state"
 	},
 	"bugs": {
 		"url": "https://forum.svar.dev"
 	},
 	"homepage": "https://svar.dev/svelte/core/",
 	"devDependencies": {
-		"@vitest/coverage-v8": "^2.1.1",
+		"@vitest/coverage-v8": "2.1.1",
 		"eslint": "9.11.1",
 		"eslint-config-prettier": "9.1.0",
-		"globals": "^15.10.0",
+		"globals": "15.10.0",
 		"husky": "9.1.6",
 		"lint-staged": "15.2.10",
 		"prettier": "3.3.3",

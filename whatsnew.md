@@ -1,3 +1,15 @@
+### 1.9.3
+
+- [fix] Regression in deleting top-level items in DataTree
+
+### 1.9.2
+
+- [update] DataTree recreates item and branche after deleting last item in a branch
+
+### 1.9.1
+
+- [update] DataTree recreates item and branche objects on updates
+
 ### 1.9.0
 
 - [dev] public version released

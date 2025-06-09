@@ -1,7 +1,6 @@
 # wx-lib-state
 
-wx-lib-state is a library that provides base helpers for DOM operations.
-
+wx-lib-state is a library that provides helpers for state management
 
 ![NPM package](https://img.shields.io/npm/v/wx-lib-state)
 
@@ -12,6 +11,6 @@ wx-lib-state is a library that provides base helpers for DOM operations.
 
 ## Running Tests
 
-   ```sh
-   yarn test
-   ```
+```sh
+yarn test
+```

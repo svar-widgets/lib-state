@@ -82,6 +82,17 @@ test("remove", () => {
 	expect(t.byId(3).open).toBeFalsy();
 });
 
+test("remove all", () => {
+	const t = getDataTree();
+
+	t.remove(1);
+	expect(t.toArray().length).to.equal(2);
+	t.remove(2);
+	expect(t.toArray().length).to.equal(1);
+	t.remove(3);
+	expect(t.toArray().length).to.equal(0);
+});
+
 test("addAfter", () => {
 	const t = getDataTree();
 	t.addAfter({ id: "y1", parent: 2 }, null);
@@ -99,4 +110,75 @@ test("addAfter", () => {
 
 	expect(t.byId("x2").$level).to.equal(1);
 	expect(t.byId("x2").parent).to.equal(0);
+});
+
+test("data updates", () => {
+	const t = getDataTree();
+	let prev, now, prev2, now2;
+
+	prev = t.getBranch(2);
+	t.update(2, { label: "2.0.1" });
+	now = t.getBranch(2);
+	expect(prev === now).toBeTruthy();
+
+	prev = t.getBranch(2);
+	t.update(21, { label: "2.1.1" });
+	now = t.getBranch(2);
+	expect(prev !== now).toBeTruthy();
+
+	prev = t.getBranch(2);
+	t.addAfter({ id: "x1" }, 1);
+	now = t.getBranch(2);
+	expect(prev === now).toBeTruthy();
+
+	prev = t.getBranch(2);
+	t.addAfter({ id: "x2" }, 22);
+	now = t.getBranch(2);
+	expect(prev !== now).toBeTruthy();
+	t.remove("x2"); // cleaning up
+
+	prev = t.getBranch(2);
+	prev2 = t.getBranch(23);
+	t.move(22, "after", 23);
+	now = t.getBranch(2);
+	now2 = t.getBranch(23);
+	expect(prev !== now).toBeTruthy();
+	expect(prev2 === now2).toBeTruthy();
+
+	prev = t.getBranch(2);
+	prev2 = t.getBranch(23);
+	t.move(22, "child", 23);
+	now = t.getBranch(2);
+	now2 = t.getBranch(23);
+	expect(prev !== now).toBeTruthy();
+	expect(prev2 !== now2).toBeTruthy();
+
+	prev = t.getBranch(221);
+	t.parse([{ id: 2211, label: "2.2.1" }], 221);
+	now = t.getBranch(221);
+	expect(prev !== now).toBeTruthy();
+
+	prev = t.getBranch(221);
+	t.parse([{ id: 2212, label: "2.2.2" }], 221);
+	now = t.getBranch(221);
+	expect(prev !== now).toBeTruthy();
+
+	prev = t.getBranch(2);
+	prev2 = t.getBranch(0);
+	t.remove(23);
+	now = t.getBranch(2);
+	now2 = t.getBranch(0);
+	expect(prev !== now).toBeTruthy();
+	expect(prev2 === now2).toBeTruthy();
+
+	prev = t.getBranch(2);
+	prev2 = t.getBranch(0);
+	t.remove(21);
+	now = t.getBranch(2);
+	now2 = t.getBranch(0);
+	expect(prev !== now).toBeTruthy();
+	expect(prev2 !== now2).toBeTruthy();
+	const obj = t.byId(2);
+	expect(obj.data).toBeNull();
+	expect(obj.open).toBeUndefined();
 });

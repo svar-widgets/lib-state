@@ -16,7 +16,7 @@ export default class DataTree<T extends IHasIDAndParent> {
 
 		if (raw && raw.length) this.parse(raw, 0);
 	}
-	parse(raw: T[], parent: TID):void {
+	parse(raw: T[], parent: TID): void {
 		const items = this._pool;
 
 		for (let i = 0; i < raw.length; i++) {
@@ -31,25 +31,25 @@ export default class DataTree<T extends IHasIDAndParent> {
 			const temp = items.get(obj.parent);
 			if (temp) {
 				if (!temp.data) temp.data = [];
+				// we are not recreating the array, as setLevel will do it anyway
 				temp.data.push(obj);
 			}
 		}
 
 		const top = items.get(parent);
-		setLevel(top.data, top.$level + 1);
+		this.setLevel(top, top.$level + 1, false);
 	}
 	add(raw: T, index: number): void {
-		this._pool.set(raw.id, raw);
-
 		const parent = this._pool.get(raw.parent || 0);
 		raw.$level = parent.$level + 1;
+		this._pool.set(raw.id, raw);
 
 		if (parent.data) {
-			if (index === -1) parent.data.push(raw);
-			else parent.data.splice(index, -1, raw);
+			if (index === -1) parent.data = [...parent.data, raw];
+			else insertElement(parent, index, raw);
 		} else parent.data = [raw];
 	}
-	addAfter(raw: T, after: TID):void {
+	addAfter(raw: T, after: TID): void {
 		if (!after) {
 			return this.add(raw, -1);
 		}
@@ -69,7 +69,7 @@ export default class DataTree<T extends IHasIDAndParent> {
 		parent.data = parent.data.filter(a => a.id != id);
 		this._clearBranch(parent);
 	}
-	_remove(obj: T):void {
+	_remove(obj: T): void {
 		if (obj.data) {
 			obj.data.forEach(i => this._remove(i as T));
 		}
@@ -78,11 +78,14 @@ export default class DataTree<T extends IHasIDAndParent> {
 	update<Data>(id: TID, values: Data): void {
 		let obj = this._pool.get(id);
 		const branch = this._pool.get(obj.parent);
-		const index = branch.data.indexOf(obj);
+		const index = branch?.data.indexOf(obj);
 
 		obj = { ...obj, ...values };
 
-		branch.data[index] = obj;
+		if (branch && index >= 0) {
+			branch.data[index] = obj;
+			branch.data = [...branch.data];
+		}
 		this._pool.set(obj.id, obj);
 	}
 	move(id: TID, mode: string, target: TID): void {
@@ -97,25 +100,29 @@ export default class DataTree<T extends IHasIDAndParent> {
 		if (!newParent.data) newParent.data = [];
 
 		const index = parent.data.indexOf(now);
-		parent.data.splice(index, 1);
+		deleteElement(parent, index);
 		const newIndex = dropChild
 			? newParent.data.length
 			: newParent.data.indexOf(tobj) + (mode === "after" ? 1 : 0);
-		newParent.data.splice(newIndex, -1, now);
+		insertElement(newParent, newIndex, now);
 
-		if (parent === newParent && index === newIndex) return null;
+		if (parent.id === newParent.id && index === newIndex) return null;
 
 		now.parent = newParent.id;
 
-		if (now.$level !== tLevel) setLevel([now], tLevel);
+		if (now.$level !== tLevel) {
+			now.$level = tLevel;
+			this.setLevel(now, tLevel + 1, true);
+		}
 
+		this.update(now.id, now);
 		this._clearBranch(parent);
 	}
 
 	private _clearBranch(obj: T): void {
 		if (obj.data && !obj.data.length) {
 			if (obj.open) delete obj.open;
-			obj.data = null;
+			this.update(obj.id, { data: null });
 		}
 	}
 
@@ -147,6 +154,20 @@ export default class DataTree<T extends IHasIDAndParent> {
 			this.eachChild(cb, child.id);
 		});
 	}
+
+	setLevel(root: IHasIDAndParent, level: number, copy: boolean): void {
+		if (!root.data) return;
+
+		root.data = root.data.map(child => {
+			if (copy) {
+				child = { ...child };
+				this._pool.set(child.id, child as T);
+			}
+			child.$level = level;
+			if (child.data) this.setLevel(child, level + 1, copy);
+			return child;
+		});
+	}
 }
 
 function toArray<T extends IHasIDAndParent>(line: T[], out: T[]): void {
@@ -158,10 +179,18 @@ function toArray<T extends IHasIDAndParent>(line: T[], out: T[]): void {
 	});
 }
 
-function setLevel(data: IHasIDAndParent[], level: number): void {
-	for (let i = 0; i < data.length; i++) {
-		const next = data[i];
-		next.$level = level;
-		if (next.data) setLevel(next.data, level + 1);
-	}
+function deleteElement(obj: IHasIDAndParent, index: number) {
+	const newData = [...obj.data];
+	newData.splice(index, 1);
+	obj.data = newData;
+}
+
+function insertElement(
+	obj: IHasIDAndParent,
+	index: number,
+	item: IHasIDAndParent
+) {
+	const newData = [...obj.data];
+	newData.splice(index, 0, item);
+	obj.data = newData;
 }

@@ -1,15 +1,15 @@
 import eslintConfigPrettier from "eslint-config-prettier";
-import tsLint, { parser } from "typescript-eslint";
-import jsLint from "@eslint/js"
+import tsLint from "typescript-eslint";
+import jsLint from "@eslint/js";
 import globals from "globals";
 
 export default [
-	{ files: ["**/*.{js,ts}"], },
+	{ files: ["**/*.{js,ts}"] },
 	jsLint.configs.recommended,
 
 	{
 		plugins: {
-			'@typescript-eslint': tsLint.plugin,
+			"@typescript-eslint": tsLint.plugin,
 		},
 		languageOptions: {
 			parser: "@typescript-eslint/parser",
@@ -21,14 +21,16 @@ export default [
 				tsconfigRootDir: import.meta.dirname,
 			},
 		},
-		
 	},
 	...tsLint.configs.recommended,
 	{
 		rules: {
 			"no-bitwise": ["error"],
 			// Ignore unused vars starting with _
-			"@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }], 
+			"@typescript-eslint/no-unused-vars": [
+				"error",
+				{ argsIgnorePattern: "^_" },
+			],
 			// Turn off the need for explicit function return types
 			"@typescript-eslint/explicit-function-return-type": "off",
 			// Warn when "any" type is used
