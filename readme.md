@@ -2,7 +2,7 @@
 
 @svar-ui/lib-state is a library that provides helpers for state management
 
-![NPM package](https://img.shields.io/npm/v/wx-lib-state)
+![NPM package](https://img.shields.io/npm/v/@svar-ui/lib-state)
 
 ## Content of the package
 
