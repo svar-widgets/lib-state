@@ -28,4 +28,5 @@ export type {
 	IWritable,
 	IPublicWritable,
 	ToReactive,
+	IEventConfig
 } from "./types";

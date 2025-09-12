@@ -1,6 +1,6 @@
-# wx-lib-state
+# @svar-ui/lib-state
 
-wx-lib-state is a library that provides helpers for state management
+@svar-ui/lib-state is a library that provides helpers for state management
 
 ![NPM package](https://img.shields.io/npm/v/wx-lib-state)
 
@@ -12,5 +12,5 @@ wx-lib-state is a library that provides helpers for state management
 ## Running Tests
 
 ```sh
-yarn test
+npm run test:run
 ```

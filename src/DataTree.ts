@@ -56,7 +56,7 @@ export default class DataTree<T extends IHasIDAndParent> {
 
 		const node = this.byId(after);
 		const parent = this.byId(node.parent);
-		const index = parent.data.indexOf(node) + 1;
+		const index = indexById(parent, node.id) + 1;
 
 		raw.parent = parent.id;
 		raw.$level = parent.$level + 1;
@@ -78,7 +78,7 @@ export default class DataTree<T extends IHasIDAndParent> {
 	update<Data>(id: TID, values: Data): void {
 		let obj = this._pool.get(id);
 		const branch = this._pool.get(obj.parent);
-		const index = branch?.data.indexOf(obj);
+		const index = indexById(branch, obj.id);
 
 		obj = { ...obj, ...values };
 
@@ -99,11 +99,11 @@ export default class DataTree<T extends IHasIDAndParent> {
 		const newParent = dropChild ? tobj : this._pool.get(tobj.parent);
 		if (!newParent.data) newParent.data = [];
 
-		const index = parent.data.indexOf(now);
+		const index = indexById(parent, now.id);
 		deleteElement(parent, index);
 		const newIndex = dropChild
 			? newParent.data.length
-			: newParent.data.indexOf(tobj) + (mode === "after" ? 1 : 0);
+			: indexById(newParent, tobj.id) + (mode === "after" ? 1 : 0);
 		insertElement(newParent, newIndex, now);
 
 		if (parent.id === newParent.id && index === newIndex) return null;
@@ -193,4 +193,10 @@ function insertElement(
 	const newData = [...obj.data];
 	newData.splice(index, 0, item);
 	obj.data = newData;
+}
+
+function indexById(parentNode: IHasIDAndParent, id: TID) {
+	return parentNode?.data.findIndex(
+		(child: IHasIDAndParent) => child.id === id
+	);
 }

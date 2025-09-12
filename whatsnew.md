@@ -1,3 +1,15 @@
+### 1.9.6
+
+- [dev] toolchain updated to tsup
+
+### 1.9.5
+
+- [fix] d.ts exports IEventConfig type
+
+### 1.9.4
+
+- [fix] DataTree incorrectly defines item index within parent data
+
 ### 1.9.3
 
 - [fix] Regression in deleting top-level items in DataTree
