@@ -1,6 +1,10 @@
+### 1.9.7
+
+- [fix] Correct type for EventBus-related classes
+
 ### 1.9.6
 
-- [dev] toolchain updated to tsup
+- [dev] Toolchain updated to tsup
 
 ### 1.9.5
 

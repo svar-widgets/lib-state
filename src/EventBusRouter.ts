@@ -1,4 +1,4 @@
-import type { IEventBus, TDispatch, CommonEvent } from "./types";
+import type { IEventBus, TDispatch } from "./types";
 
 export default class EventBusRouter<T> implements IEventBus<T> {
 	private _dispatch: TDispatch<T>;
@@ -9,10 +9,10 @@ export default class EventBusRouter<T> implements IEventBus<T> {
 		this._dispatch = dispatch;
 		this.exec = this.exec.bind(this);
 	}
-	async exec(name: keyof T, ev: CommonEvent): Promise<T[keyof T]> {
-		this._dispatch(name, ev as T[keyof T]);
-		if (this._nextHandler) await this._nextHandler.exec(name, ev as T[keyof T]);
-		return ev as T[keyof T];
+	async exec(name: keyof T, ev: T[keyof T]): Promise<T[keyof T]> {
+		this._dispatch(name, ev);
+		if (this._nextHandler) await this._nextHandler.exec(name, ev);
+		return ev;
 	}
 	setNext(next: IEventBus<T>): IEventBus<T> {
 		return (this._nextHandler = next);
