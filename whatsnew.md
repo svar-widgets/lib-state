@@ -1,3 +1,12 @@
+### 1.10.1
+
+- [fix] Correct return type of IPublicWritable.subscribe()
+
+### 1.10.0
+
+- [add] DataTree.serialize() returns all items regardless of open state
+- [fix] DataTree.toArray() fails on open items without child data
+
 ### 1.9.7
 
 - [fix] Correct type for EventBus-related classes

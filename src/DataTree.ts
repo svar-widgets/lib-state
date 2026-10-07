@@ -127,11 +127,20 @@ export default class DataTree<T extends IHasIDAndParent> {
 	}
 
 	toArray(): T[] {
+		return this._flatten(false);
+	}
+
+	serialize(): T[] {
+		return this._flatten(true);
+	}
+
+	private _flatten(closed: boolean): T[] {
 		const out: T[] = [];
 		const kids = this._pool.get(0).data;
-		if (kids) toArray(kids, out);
+		if (kids) toArray(kids, out, closed);
 		return out;
 	}
+
 	byId(id: TID): T {
 		return this._pool.get(id);
 	}
@@ -170,11 +179,15 @@ export default class DataTree<T extends IHasIDAndParent> {
 	}
 }
 
-function toArray<T extends IHasIDAndParent>(line: T[], out: T[]): void {
+function toArray<T extends IHasIDAndParent>(
+	line: T[],
+	out: T[],
+	closed: boolean
+): void {
 	line.forEach(a => {
 		out.push(a);
-		if (a.open === true) {
-			toArray(a.data, out);
+		if (a.data && (closed || a.open)) {
+			toArray(a.data, out, closed);
 		}
 	});
 }

@@ -46,11 +46,12 @@ export interface IWritable<T> {
 }
 
 type TTrigger<T> = (v: T) => void;
+type TUnsubscribe = () => void;
 type SomeCallback = () => void;
 export type TAsyncSignals = { [key: string]: SomeCallback | null };
 
 export interface IPublicWritable<T> {
-	subscribe: (fn: TTrigger<T>) => void;
+	subscribe: (fn: TTrigger<T>) => TUnsubscribe;
 	__trigger(): void;
 	__parse: (
 		val: T,

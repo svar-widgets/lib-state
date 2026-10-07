@@ -1,4 +1,4 @@
-# @wx/lib-state
+# @svar/lib-state
 
 Framework-agnostic reactive state management with event processing.
 
@@ -7,7 +7,7 @@ Framework-agnostic reactive state management with event processing.
 ## Installation
 
 ```
-npm install @wx/lib-state
+npm install @svar/lib-state
 ```
 
 ## Core Modules

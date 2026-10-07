@@ -20,20 +20,21 @@ DataArray and DataTree are indexed collection classes that provide O(1) ID-based
 
 ### DataTree
 
-| Method        | Purpose                                      | Returns |
-| ------------- | -------------------------------------------- | ------- |
-| `parse()`     | Bulk-load items into a parent branch         | `void`  |
-| `add()`       | Insert an item at a position within a branch | `void`  |
-| `addAfter()`  | Insert an item after a sibling               | `void`  |
-| `remove()`    | Remove an item and its descendants           | `void`  |
-| `update()`    | Merge new values into an existing node       | `void`  |
-| `move()`      | Relocate a node within the tree              | `void`  |
-| `toArray()`   | Flatten visible tree to ordered array        | `T[]`   |
-| `byId()`      | Look up a node by ID                         | `T`     |
-| `getBranch()` | Get the children array of a node             | `T[]`   |
-| `forEach()`   | Iterate over all nodes (excluding root)      | `void`  |
-| `eachChild()` | Recursively iterate descendants of a node    | `void`  |
-| `setLevel()`  | Recalculate nesting levels for a subtree     | `void`  |
+| Method        | Purpose                                          | Returns |
+| ------------- | ------------------------------------------------ | ------- |
+| `parse()`     | Bulk-load items into a parent branch             | `void`  |
+| `add()`       | Insert an item at a position within a branch     | `void`  |
+| `addAfter()`  | Insert an item after a sibling                   | `void`  |
+| `remove()`    | Remove an item and its descendants               | `void`  |
+| `update()`    | Merge new values into an existing node           | `void`  |
+| `move()`      | Relocate a node within the tree                  | `void`  |
+| `toArray()`   | Flatten visible tree to ordered array            | `T[]`   |
+| `serialize()` | Flatten the full tree, including closed branches | `T[]`   |
+| `byId()`      | Look up a node by ID                             | `T`     |
+| `getBranch()` | Get the children array of a node                 | `T[]`   |
+| `forEach()`   | Iterate over all nodes (excluding root)          | `void`  |
+| `eachChild()` | Recursively iterate descendants of a node        | `void`  |
+| `setLevel()`  | Recalculate nesting levels for a subtree         | `void`  |
 
 ## Public Interface
 
@@ -184,6 +185,7 @@ class DataTree<T extends IHasIDAndParent> {
 	update<Data>(id: TID, values: Data): void;
 	move(id: TID, mode: string, target: TID): void;
 	toArray(): T[];
+	serialize(): T[];
 	byId(id: TID): T;
 	getBranch(id: TID): T[];
 	forEach(cb: (value: T) => void): void;
@@ -331,6 +333,22 @@ toArray(): T[]
 - Recursively includes a node's children only if `node.open === true`
 - Closed branches are represented by the parent node alone - children are omitted
 
+#### serialize()
+
+```typescript
+serialize(): T[]
+```
+
+**Purpose**: Flatten the whole tree into an ordered array, including descendants of closed branches.
+
+**Returns**: Array of nodes in depth-first order. The virtual root is excluded. Items are the live node objects, not copies.
+
+**Behavior**:
+
+- Starts from the root's children
+- Descends into a branch whenever it has `data`, regardless of `open`
+- A closed parent is followed by its full subtree
+
 #### byId()
 
 ```typescript
@@ -469,6 +487,9 @@ tasks.getBranch(4); // null (leaf node)
 
 // toArray respects open state - initially all closed
 tasks.toArray(); // [node1, node4] (children of closed nodes hidden)
+
+// serialize includes closed branches
+tasks.serialize(); // [node1, node2, node3, node4]
 
 tasks.update(1, { open: true });
 tasks.toArray(); // [node1, node2, node3, node4]

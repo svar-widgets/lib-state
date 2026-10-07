@@ -31,6 +31,29 @@ test("eachChild", () => {
 	expect(data, "branch 3").to.deep.equal([]);
 });
 
+test("serialize", () => {
+	const tree = getDataTree();
+
+	expect(
+		tree.serialize().map(a => a.id),
+		"closed branches included"
+	).to.deep.equal([1, 2, 21, 22, 221, 23, 3]);
+
+	tree.update(2, { open: true });
+	tree.update(22, { open: true });
+	expect(
+		tree.serialize().map(a => a.id),
+		"open state ignored"
+	).to.deep.equal([1, 2, 21, 22, 221, 23, 3]);
+
+	expect(tree.serialize()[0], "live node").to.equal(tree.byId(1));
+});
+
+test("serialize empty", () => {
+	const tree = new DataTree();
+	expect(tree.serialize()).to.deep.equal([]);
+});
+
 test("forEach", () => {
 	const tree = getDataTree();
 	let data = [];
